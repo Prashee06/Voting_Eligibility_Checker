@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Voting Eligibility Checker</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="card">
+
+        <div class="header">
+
+            <div class="icon">🗳️</div>
+
+            <h1>Voting Eligibility Checker</h1>
+
+            <p>
+                Check whether you are eligible to vote in India
+            </p>
+
+        </div>
+
+
+        <!-- PAGE 1 -->
+
+        <div class="step">
+            <span>1</span>
+            Eligibility Check
+        </div>
+
+
+        <form id="eligibilityForm">
+
+            <!-- NAME -->
+
+            <div class="form-group">
+
+                <label for="name">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- DATE OF BIRTH -->
+
+            <div class="form-group">
+
+                <label for="dob">
+                    Date of Birth
+                </label>
+
+                <input
+                    type="date"
+                    id="dob"
+                    name="dob"
+                    required
+                >
+
+            </div>
+
+
+            <!-- COUNTRY -->
+
+            <div class="form-group">
+
+                <label for="country">
+                    Country
+                </label>
+
+                <select
+                    id="country"
+                    name="country"
+                    required
+                >
+
+                    <option value="">
+                        Select your country
+                    </option>
+
+                    <option value="India">
+                        India
+                    </option>
+
+                    <option value="United States">
+                        United States
+                    </option>
+
+                    <option value="United Kingdom">
+                        United Kingdom
+                    </option>
+
+                    <option value="Canada">
+                        Canada
+                    </option>
+
+                    <option value="Australia">
+                        Australia
+                    </option>
+
+                    <option value="Germany">
+                        Germany
+                    </option>
+
+                    <option value="France">
+                        France
+                    </option>
+
+                    <option value="Japan">
+                        Japan
+                    </option>
+
+                    <option value="China">
+                        China
+                    </option>
+
+                    <option value="Sri Lanka">
+                        Sri Lanka
+                    </option>
+
+                    <option value="Nepal">
+                        Nepal
+                    </option>
+
+                    <option value="Bangladesh">
+                        Bangladesh
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- OTHER COUNTRY -->
+
+            <div
+                class="form-group hidden"
+                id="otherCountryGroup"
+            >
+
+                <label for="otherCountry">
+                    Enter Country Name
+                </label>
+
+                <input
+                    type="text"
+                    id="otherCountry"
+                    placeholder="Enter your country"
+                >
+
+            </div>
+
+
+            <!-- CITIZENSHIP -->
+
+            <div class="form-group">
+
+                <label for="citizenship">
+                    Citizenship
+                </label>
+
+                <select
+                    id="citizenship"
+                    name="citizenship"
+                    required
+                >
+
+                    <option value="">
+                        Select your citizenship
+                    </option>
+
+                    <option value="India">
+                        Indian
+                    </option>
+
+                    <option value="United States">
+                        American
+                    </option>
+
+                    <option value="United Kingdom">
+                        British
+                    </option>
+
+                    <option value="Canada">
+                        Canadian
+                    </option>
+
+                    <option value="Australia">
+                        Australian
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- REGISTERED VOTER -->
+
+            <div class="form-group">
+
+                <label>
+                    Are you already registered as a voter?
+                </label>
+
+                <div class="radio-container">
+
+                    <label class="radio-label">
+
+                        <input
+                            type="radio"
+                            name="registered"
+                            value="Yes"
+                            required
+                        >
+
+                        Yes
+
+                    </label>
+
+
+                    <label class="radio-label">
+
+                        <input
+                            type="radio"
+                            name="registered"
+                            value="No"
+                        >
+
+                        No
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHECK BUTTON -->
+
+            <button
+                type="submit"
+                id="checkButton"
+            >
+                Check Eligibility
+            </button>
+
+        </form>
+
+
+        <!-- RESULT -->
+
+        <div
+            id="result"
+            class="result hidden"
+        >
+
+            <div id="resultIcon">
+                ✅
+            </div>
+
+            <h2 id="resultTitle">
+                Eligible to Vote
+            </h2>
+
+            <p id="resultMessage">
+            </p>
+
+            <div
+                id="resultDetails"
+                class="result-details"
+            >
+            </div>
+
+            <button
+                id="continueButton"
+                class="hidden"
+                type="button"
+            >
+                Continue to Additional Details
+            </button>
+
+        </div>
+
+
+        <div class="note">
+
+            <strong>Note:</strong>
+
+            This project is a demonstration voting eligibility
+            checker. It does not replace official voter verification.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

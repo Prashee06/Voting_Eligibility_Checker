@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Additional Voter Details</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="card">
+
+        <div class="header">
+
+            <div class="icon">📋</div>
+
+            <h1>Additional Voter Details</h1>
+
+            <p>
+                Enter the remaining details to complete your record
+            </p>
+
+        </div>
+
+
+        <!-- PAGE 2 -->
+
+        <div class="step">
+
+            <span>2</span>
+
+            Additional Details
+
+        </div>
+
+
+        <form id="additionalForm">
+
+
+            <!-- FULL NAME -->
+
+            <div class="form-group">
+
+                <label for="fullName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- DOB -->
+
+            <div class="form-group">
+
+                <label for="dateOfBirth">
+                    Date of Birth
+                </label>
+
+                <input
+                    type="date"
+                    id="dateOfBirth"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- AGE -->
+
+            <div class="form-group">
+
+                <label for="age">
+                    Age
+                </label>
+
+                <input
+                    type="number"
+                    id="age"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- GENDER -->
+
+            <div class="form-group">
+
+                <label for="gender">
+                    Gender
+                </label>
+
+                <select id="gender">
+
+                    <option value="">
+                        Select Gender
+                    </option>
+
+                    <option value="Male">
+                        Male
+                    </option>
+
+                    <option value="Female">
+                        Female
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="form-group">
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="Enter 10-digit phone number"
+                    maxlength="10"
+                >
+
+                <small>
+                    Enter a valid 10-digit Indian mobile number.
+                </small>
+
+            </div>
+
+
+            <!-- CITIZENSHIP -->
+
+            <div class="form-group">
+
+                <label for="additionalCitizenship">
+                    Citizenship
+                </label>
+
+                <input
+                    type="text"
+                    id="additionalCitizenship"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- STATE -->
+
+            <div class="form-group">
+
+                <label for="state">
+                    State
+                </label>
+
+                <input
+                    type="text"
+                    id="state"
+                    placeholder="Enter your state"
+                >
+
+            </div>
+
+
+            <!-- DISTRICT -->
+
+            <div class="form-group">
+
+                <label for="district">
+                    District
+                </label>
+
+                <input
+                    type="text"
+                    id="district"
+                    placeholder="Enter your district"
+                >
+
+            </div>
+
+
+            <!-- CITY -->
+
+            <div class="form-group">
+
+                <label for="city">
+                    City
+                </label>
+
+                <input
+                    type="text"
+                    id="city"
+                    placeholder="Enter your city"
+                >
+
+            </div>
+
+
+            <!-- ADDRESS -->
+
+            <div class="form-group">
+
+                <label for="address">
+                    Address
+                </label>
+
+                <textarea
+                    id="address"
+                    rows="3"
+                    placeholder="Enter your complete address"
+                ></textarea>
+
+            </div>
+
+
+            <!-- PINCODE -->
+
+            <div class="form-group">
+
+                <label for="pincode">
+                    Pincode
+                </label>
+
+                <input
+                    type="text"
+                    id="pincode"
+                    maxlength="6"
+                    placeholder="Enter 6-digit pincode"
+                >
+
+            </div>
+
+
+            <!-- AADHAAR -->
+
+            <div class="form-group">
+
+                <label for="aadhaar">
+                    Aadhaar Number
+                </label>
+
+                <input
+                    type="text"
+                    id="aadhaar"
+                    maxlength="12"
+                    placeholder="Enter 12-digit Aadhaar number"
+                >
+
+                <small>
+                    For a college demonstration, use test data rather
+                    than a real Aadhaar number.
+                </small>
+
+            </div>
+
+
+            <!-- ALREADY REGISTERED -->
+
+            <div class="form-group">
+
+                <label>
+                    Already registered as a voter?
+                </label>
+
+                <input
+                    type="text"
+                    id="alreadyVoter"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- VOTER ID -->
+
+            <div
+                class="form-group hidden"
+                id="voterIdGroup"
+            >
+
+                <label for="voterId">
+                    Voter ID Number
+                </label>
+
+                <input
+                    type="text"
+                    id="voterId"
+                    maxlength="20"
+                    placeholder="Enter Voter ID"
+                >
+
+                <small>
+                    Enter the voter ID only if you are already
+                    registered as a voter.
+                </small>
+
+            </div>
+
+
+            <!-- SAVE -->
+
+            <button
+                type="submit"
+                id="saveButton"
+            >
+                Save Details
+            </button>
+
+
+        </form>
+
+
+        <!-- SAVE RESULT -->
+
+        <div
+            id="saveResult"
+            class="result hidden"
+        >
+
+            <div id="saveIcon">
+                ✅
+            </div>
+
+            <h2 id="saveTitle">
+                Details Saved
+            </h2>
+
+            <p id="saveMessage">
+            </p>
+
+            <div
+                id="savedDetails"
+                class="result-details"
+            >
+            </div>
+
+        </div>
+
+
+        <div class="note">
+
+            Your details are stored in the MySQL database
+            configured for this project.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
