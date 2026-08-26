@@ -11,20 +11,20 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t Voting_Eligibility_Checker .'
+                bat 'docker build -t voting_eligibility_checker .'
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                bat 'docker stop Voting_Eligibility_Checker 2>nul || exit 0'
-                bat 'docker rm Voting_Eligibility_Checker 2>nul || exit 0'
+                bat 'docker stop voting_eligibility_checker 2>nul || exit 0'
+                bat 'docker rm voting_eligibility_checker 2>nul || exit 0'
             }
         }
 
         stage('Run Container') {
             steps {
-                bat 'docker run -d --name Voting_Eligibility_Checker -p 9091:80 Voting_Eligibility_Checker'
+                bat 'docker run -d --name voting_eligibility_checker -p 9091:80 voting_eligibility_checker'
             }
         }
     }
