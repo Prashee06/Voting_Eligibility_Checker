@@ -1,13 +1,30 @@
-select version();
-create database voting_checker;
-use voting_checker;
-create table eligibility_checks(check_id INT AUTO_INCREMENT primary key,Full_name varchar(100)not null,Age INT not null,Country varchar(100) not null,Eligible boolean not null,reason varchar(255) not null,Checked_at timestamp default current_timestamp);
-create table eligible_voters(Voter_record_id int auto_increment primary key,Check_id int not null,Full_name varchar(100) not null,Date_of_birth date not null,Age int not null,Gender varchar(20),Phone_number varchar(15)not null,Citizenship varchar(100)not null,State varchar(100),District varchar(100),City varchar(100),Address varchar(255),Pincode varchar(10),Aadhar_number varchar(12)not null,Already_voter boolean not null,Voter_id varchar(20),checked_at timestamp default current_timestamp,foreign key(Check_id)references Eligibility_checks(Check_id));
-use voting_checker;
-show tables;
-DESCRIBE eligibility_checks;
+CREATE DATABASE IF NOT EXISTS voting_checker;
+USE voting_checker;
 
-DESCRIBE eligible_voters;
+CREATE TABLE IF NOT EXISTS eligibility_checks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    Full_name VARCHAR(255),
+    Age INT,
+    Country VARCHAR(100),
+    Eligible BOOLEAN,
+    reason VARCHAR(255)
+);
 
-SELECT * FROM eligibility_checks;
-SELECT * FROM eligible_voters;
+CREATE TABLE IF NOT EXISTS eligible_voters (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    Check_id INT,
+    Full_name VARCHAR(255),
+    Date_of_birth DATE,
+    Age INT,
+    Gender VARCHAR(50),
+    Phone_number VARCHAR(15),
+    Citizenship VARCHAR(100),
+    State VARCHAR(100),
+    District VARCHAR(100),
+    City VARCHAR(100),
+    Address TEXT,
+    Pincode VARCHAR(10),
+    Aadhar_number VARCHAR(20),
+    Already_voter BOOLEAN,
+    Voter_id VARCHAR(50)
+);

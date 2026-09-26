@@ -35,74 +35,28 @@ public class VotingServer{
             "Wisdomo@0415";
 
 
-    public static void main(String[] args)
-            throws IOException {
+    public static void main(String[] args) throws IOException {
 
-        HttpServer server =
-                HttpServer.create(
-                        new InetSocketAddress(
-                                "localhost",
-                                9091
-                        ),
-                        0
-                );
+    // Bind to port 9091 on all available interfaces (0.0.0.0 / 127.0.0.1)
+    HttpServer server = HttpServer.create(new InetSocketAddress(9091), 0);
 
+    server.createContext("/", VotingServer::home);
+    server.createContext("/check", VotingServer::checkEligibility);
+    server.createContext("/saveEligible", VotingServer::saveEligible);
 
-        server.createContext(
-                "/",
-                VotingServer::home
-        );
+    System.out.println("==========================================");
+    System.out.println("       VOTING ELIGIBILITY CHECKER");
+    System.out.println("          JAVA + JDBC + MYSQL");
+    System.out.println("==========================================");
+    System.out.println();
+    System.out.println("Server running at:");
+    System.out.println("http://localhost:9091");
+    System.out.println();
+    System.out.println("Press Ctrl + C to stop.");
+    System.out.println();
 
-
-        server.createContext(
-                "/check",
-                VotingServer::checkEligibility
-        );
-
-
-        server.createContext(
-                "/saveEligible",
-                VotingServer::saveEligible
-        );
-
-
-        System.out.println(
-                "=========================================="
-        );
-
-        System.out.println(
-                "       VOTING ELIGIBILITY CHECKER"
-        );
-
-        System.out.println(
-                "          JAVA + JDBC + MYSQL"
-        );
-
-        System.out.println(
-                "=========================================="
-        );
-
-        System.out.println();
-
-        System.out.println(
-                "Server running at:"
-        );
-
-        System.out.println(
-                "http://localhost:9091"
-        );
-
-        System.out.println();
-
-        System.out.println(
-                "Press Ctrl + C to stop."
-        );
-
-        System.out.println();
-
-
-        server.start();
-    }
+    server.start();
+}
 
 
     // =====================================================
