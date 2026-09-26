@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class VotingServer {
+public class VotingServer{
 
     private static final String DB_URL =
             "jdbc:mysql://localhost:3306/voting_checker";

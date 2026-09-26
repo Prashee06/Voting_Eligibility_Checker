@@ -1,413 +1,549 @@
+// ============================================================
+// VOTING ELIGIBILITY CHECKER - script.js
+// ============================================================
+
+// Java backend URL
 const SERVER_URL = "http://localhost:9091";
 
 
-// ======================================================
-// PAGE 1 - ELIGIBILITY CHECKER
-// ======================================================
+// ============================================================
+// PAGE 1 - ELIGIBILITY CHECK
+// ============================================================
 
-const eligibilityForm =
-    document.getElementById("eligibilityForm");
+const eligibilityForm = document.getElementById("eligibilityForm");
 
+const countrySelect = document.getElementById("country");
+const otherCountryGroup = document.getElementById("otherCountryGroup");
+const otherCountryInput = document.getElementById("otherCountry");
 
-if (eligibilityForm) {
+const result = document.getElementById("result");
+const resultIcon = document.getElementById("resultIcon");
+const resultTitle = document.getElementById("resultTitle");
+const resultMessage = document.getElementById("resultMessage");
+const resultDetails = document.getElementById("resultDetails");
 
-    const country =
-        document.getElementById("country");
-
-    const otherCountryGroup =
-        document.getElementById("otherCountryGroup");
-
-    const otherCountry =
-        document.getElementById("otherCountry");
-
-    const result =
-        document.getElementById("result");
-
-    const resultIcon =
-        document.getElementById("resultIcon");
-
-    const resultTitle =
-        document.getElementById("resultTitle");
-
-    const resultMessage =
-        document.getElementById("resultMessage");
-
-    const resultDetails =
-        document.getElementById("resultDetails");
-
-    const continueButton =
-        document.getElementById("continueButton");
-
-    const checkButton =
-        document.getElementById("checkButton");
+const continueButton = document.getElementById("continueButton");
+const checkButton = document.getElementById("checkButton");
 
 
-    // --------------------------------------------------
-    // OTHER COUNTRY
-    // --------------------------------------------------
+// ============================================================
+// SHOW / HIDE "OTHER COUNTRY"
+// ============================================================
 
-    country.addEventListener("change", function () {
+if (countrySelect) {
 
-        if (country.value === "Other") {
+    countrySelect.addEventListener("change", function () {
+
+        if (countrySelect.value === "Other") {
 
             otherCountryGroup.classList.remove("hidden");
 
-            otherCountry.required = true;
+            otherCountryInput.required = true;
 
         } else {
 
             otherCountryGroup.classList.add("hidden");
 
-            otherCountry.required = false;
+            otherCountryInput.required = false;
 
-            otherCountry.value = "";
+            otherCountryInput.value = "";
         }
-
     });
-
-
-    // --------------------------------------------------
-    // CHECK ELIGIBILITY
-    // --------------------------------------------------
-
-    eligibilityForm.addEventListener(
-        "submit",
-        async function (event) {
-
-            event.preventDefault();
-
-
-            checkButton.disabled = true;
-
-            checkButton.textContent =
-                "Checking...";
-
-
-            result.classList.add("hidden");
-
-            continueButton.classList.add("hidden");
-
-
-            try {
-
-                const name =
-                    document.getElementById("name").value.trim();
-
-                const dob =
-                    document.getElementById("dob").value;
-
-                let selectedCountry =
-                    country.value;
-
-                const citizenship =
-                    document.getElementById("citizenship").value;
-
-
-                const registeredElement =
-                    document.querySelector(
-                        'input[name="registered"]:checked'
-                    );
-
-
-                if (!registeredElement) {
-
-                    throw new Error(
-                        "Please select whether you are already registered as a voter."
-                    );
-                }
-
-
-                const registered =
-                    registeredElement.value;
-
-
-                // Other country
-
-                if (selectedCountry === "Other") {
-
-                    selectedCountry =
-                        otherCountry.value.trim();
-
-                    if (!selectedCountry) {
-
-                        throw new Error(
-                            "Please enter your country name."
-                        );
-                    }
-                }
-
-
-                // Basic frontend validation
-
-                if (!name) {
-
-                    throw new Error(
-                        "Please enter your full name."
-                    );
-                }
-
-
-                if (!dob) {
-
-                    throw new Error(
-                        "Please select your date of birth."
-                    );
-                }
-
-
-                if (!selectedCountry) {
-
-                    throw new Error(
-                        "Please select your country."
-                    );
-                }
-
-
-                if (!citizenship) {
-
-                    throw new Error(
-                        "Please select your citizenship."
-                    );
-                }
-
-
-                // --------------------------------------------------
-                // SEND DATA TO JAVA SERVER
-                // --------------------------------------------------
-
-                const formData =
-                    new URLSearchParams();
-
-
-                formData.append(
-                    "name",
-                    name
-                );
-
-                formData.append(
-                    "dob",
-                    dob
-                );
-
-                formData.append(
-                    "country",
-                    selectedCountry
-                );
-
-                formData.append(
-                    "citizenship",
-                    citizenship
-                );
-
-                formData.append(
-                    "registered",
-                    registered
-                );
-
-
-                const response =
-                    await fetch(
-                        SERVER_URL + "/check",
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/x-www-form-urlencoded"
-                            },
-
-                            body:
-                                formData.toString()
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                // --------------------------------------------------
-                // DISPLAY RESULT
-                // --------------------------------------------------
-
-                result.classList.remove("hidden");
-
-
-                if (data.eligible === true) {
-
-                    result.className =
-                        "result success";
-
-
-                    resultIcon.textContent =
-                        "✅";
-
-
-                    resultTitle.textContent =
-                        "Eligible to Vote";
-
-
-                    resultMessage.textContent =
-                        "You meet the basic eligibility requirements to vote in India.";
-
-
-                    resultDetails.innerHTML =
-
-                        "<strong>Name:</strong> "
-                        + escapeHtml(data.name)
-                        + "<br>"
-
-                        + "<strong>Age:</strong> "
-                        + data.age
-                        + "<br>"
-
-                        + "<strong>Country:</strong> "
-                        + escapeHtml(data.country)
-                        + "<br>"
-
-                        + "<strong>Citizenship:</strong> "
-                        + escapeHtml(data.citizenship)
-                        + "<br>"
-
-                        + "<strong>Registered Voter:</strong> "
-                        + escapeHtml(data.registered);
-
-
-                    // Save data for Page 2
-
-                    const eligibilityData = {
-
-                        checkId:
-                            data.checkId,
-
-                        name:
-                            data.name,
-
-                        dob:
-                            data.dob,
-
-                        age:
-                            data.age,
-
-                        country:
-                            data.country,
-
-                        citizenship:
-                            data.citizenship,
-
-                        registered:
-                            data.registered
-
-                    };
-
-
-                    sessionStorage.setItem(
-                        "eligibilityData",
-                        JSON.stringify(
-                            eligibilityData
-                        )
-                    );
-
-
-                    continueButton.classList.remove(
-                        "hidden"
-                    );
-
-
-                    continueButton.onclick =
-                        function () {
-
-                            window.location.href =
-                                "additional.html";
-
-                        };
-
-
-                } else {
-
-                    result.className =
-                        "result failure";
-
-
-                    resultIcon.textContent =
-                        "❌";
-
-
-                    resultTitle.textContent =
-                        "Not Eligible to Vote";
-
-
-                    resultMessage.textContent =
-                        data.reason ||
-                        "You are not eligible to vote.";
-
-
-                    resultDetails.innerHTML =
-
-                        "<strong>Name:</strong> "
-                        + escapeHtml(data.name || name)
-                        + "<br>"
-
-                        + "<strong>Age:</strong> "
-                        + (data.age || "Not available")
-                        + "<br>"
-
-                        + "<strong>Country:</strong> "
-                        + escapeHtml(
-                            data.country || selectedCountry
-                        )
-                        + "<br>"
-
-                        + "<strong>Citizenship:</strong> "
-                        + escapeHtml(
-                            data.citizenship || citizenship
-                        )
-                        + "<br>"
-
-                        + "<strong>Reason:</strong> "
-                        + escapeHtml(
-                            data.reason ||
-                            "Not eligible"
-                        );
-
-                }
-
-
-            } catch (error) {
-
-                result.className =
-                    "result failure";
-
-                result.classList.remove(
-                    "hidden"
-                );
-
-                resultIcon.textContent =
-                    "⚠️";
-
-                resultTitle.textContent =
-                    "Error";
-
-                resultMessage.textContent =
-                    error.message;
-
-
-            } finally {
-
-                checkButton.disabled = false;
-
-                checkButton.textContent =
-                    "Check Eligibility";
-            }
-
-        }
-    );
 }
 
 
-// ======================================================
+// ============================================================
+// ELIGIBILITY FORM SUBMIT
+// ============================================================
+
+if (eligibilityForm) {
+
+    eligibilityForm.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+
+        // --------------------------------------------------------
+        // Get form values
+        // --------------------------------------------------------
+
+        const name =
+            document.getElementById("name").value.trim();
+
+        const dob =
+            document.getElementById("dob").value;
+
+        const selectedCountry =
+            countrySelect.value;
+
+        const citizenship =
+            document.getElementById("citizenship").value;
+
+        const registeredElement =
+            document.querySelector(
+                'input[name="registered"]:checked'
+            );
+
+
+        // --------------------------------------------------------
+        // Check registered voter selection
+        // --------------------------------------------------------
+
+        if (!registeredElement) {
+
+            alert("Please select whether you are already registered as a voter.");
+
+            return;
+        }
+
+
+        const registered =
+            registeredElement.value;
+
+
+        // --------------------------------------------------------
+        // Determine country
+        // --------------------------------------------------------
+
+        let country = selectedCountry;
+
+
+        if (selectedCountry === "Other") {
+
+            country =
+                otherCountryInput.value.trim();
+
+            if (!country) {
+
+                alert("Please enter your country name.");
+
+                otherCountryInput.focus();
+
+                return;
+            }
+        }
+
+
+        // --------------------------------------------------------
+        // Basic validation
+        // --------------------------------------------------------
+
+        if (!name) {
+
+            alert("Please enter your full name.");
+
+            document.getElementById("name").focus();
+
+            return;
+        }
+
+
+        if (!dob) {
+
+            alert("Please select your date of birth.");
+
+            document.getElementById("dob").focus();
+
+            return;
+        }
+
+
+        if (!country) {
+
+            alert("Please select your country.");
+
+            countrySelect.focus();
+
+            return;
+        }
+
+
+        if (!citizenship) {
+
+            alert("Please select your citizenship.");
+
+            document.getElementById("citizenship").focus();
+
+            return;
+        }
+
+
+        // --------------------------------------------------------
+        // Check that DOB is not in the future
+        // --------------------------------------------------------
+
+        const birthDate =
+            new Date(dob);
+
+        const today =
+            new Date();
+
+        today.setHours(0, 0, 0, 0);
+
+        if (birthDate > today) {
+
+            alert("Date of birth cannot be in the future.");
+
+            return;
+        }
+
+
+        // --------------------------------------------------------
+        // Disable button while checking
+        // --------------------------------------------------------
+
+        checkButton.disabled = true;
+
+        checkButton.textContent = "Checking...";
+
+
+        // Hide previous result
+        result.classList.add("hidden");
+
+        continueButton.classList.add("hidden");
+
+
+        try {
+
+            // ----------------------------------------------------
+            // Create request data
+            // ----------------------------------------------------
+
+            const formData =
+                new URLSearchParams();
+
+            formData.append("name", name);
+            formData.append("dob", dob);
+            formData.append("country", country);
+            formData.append("citizenship", citizenship);
+            formData.append("registered", registered);
+
+
+            // ----------------------------------------------------
+            // Send request to Java backend
+            // ----------------------------------------------------
+
+            const response =
+                await fetch(
+                    SERVER_URL + "/check",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/x-www-form-urlencoded"
+                        },
+
+                        body: formData.toString()
+                    }
+                );
+
+
+            // ----------------------------------------------------
+            // Convert response to JSON
+            // ----------------------------------------------------
+
+            const data =
+                await response.json();
+
+
+            console.log("Java server response:", data);
+
+
+            // ====================================================
+            // IMPORTANT ERROR CHECK
+            // ====================================================
+
+            /*
+             * Java sends:
+             *
+             * {
+             *   success: false,
+             *   message: "..."
+             * }
+             *
+             * when there is a server/database error.
+             *
+             * Previously this was being treated as
+             * "Not eligible".
+             */
+
+            if (!response.ok || data.success === false) {
+
+                throw new Error(
+                    data.message ||
+                    "The Java server returned an error."
+                );
+            }
+
+
+            // ====================================================
+            // DISPLAY RESULT
+            // ====================================================
+
+            result.classList.remove("hidden");
+
+
+            // ====================================================
+            // ELIGIBLE
+            // ====================================================
+
+            if (data.eligible === true) {
+
+                resultIcon.textContent = "✅";
+
+                resultTitle.textContent =
+                    "Eligible to Vote";
+
+                resultMessage.textContent =
+                    data.reason ||
+                    "You are eligible to vote in India.";
+
+
+                resultDetails.innerHTML = `
+
+                    <p>
+                        <strong>Name:</strong>
+                        ${escapeHtml(data.name || name)}
+                    </p>
+
+                    <p>
+                        <strong>Age:</strong>
+                        ${data.age ?? "Not available"}
+                    </p>
+
+                    <p>
+                        <strong>Country:</strong>
+                        ${escapeHtml(data.country || country)}
+                    </p>
+
+                    <p>
+                        <strong>Citizenship:</strong>
+                        ${escapeHtml(
+                            data.citizenship ||
+                            citizenship
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Registered Voter:</strong>
+                        ${escapeHtml(
+                            data.registered ||
+                            registered
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Reason:</strong>
+                        ${escapeHtml(
+                            data.reason ||
+                            "Eligible to vote."
+                        )}
+                    </p>
+
+                `;
+
+
+                // ------------------------------------------------
+                // Save eligibility data
+                // ------------------------------------------------
+
+                const eligibilityData = {
+
+                    checkId:
+                        data.checkId,
+
+                    name:
+                        data.name || name,
+
+                    dob:
+                        data.dob || dob,
+
+                    age:
+                        data.age,
+
+                    country:
+                        data.country || country,
+
+                    citizenship:
+                        data.citizenship || citizenship,
+
+                    registered:
+                        data.registered || registered,
+
+                    eligible:
+                        true,
+
+                    reason:
+                        data.reason || ""
+
+                };
+
+
+                sessionStorage.setItem(
+                    "eligibilityData",
+                    JSON.stringify(eligibilityData)
+                );
+
+
+                // ------------------------------------------------
+                // Show Continue button
+                // ------------------------------------------------
+
+                continueButton.classList.remove("hidden");
+
+            }
+
+
+            // ====================================================
+            // NOT ELIGIBLE
+            // ====================================================
+
+            else {
+
+                resultIcon.textContent = "❌";
+
+                resultTitle.textContent =
+                    "Not Eligible to Vote";
+
+                resultMessage.textContent =
+                    data.reason ||
+                    "You are not eligible to vote.";
+
+
+                resultDetails.innerHTML = `
+
+                    <p>
+                        <strong>Name:</strong>
+                        ${escapeHtml(data.name || name)}
+                    </p>
+
+                    <p>
+                        <strong>Age:</strong>
+                        ${data.age ?? "Not available"}
+                    </p>
+
+                    <p>
+                        <strong>Country:</strong>
+                        ${escapeHtml(
+                            data.country || country
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Citizenship:</strong>
+                        ${escapeHtml(
+                            data.citizenship ||
+                            citizenship
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Registered Voter:</strong>
+                        ${escapeHtml(
+                            data.registered ||
+                            registered
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Reason:</strong>
+                        ${escapeHtml(
+                            data.reason ||
+                            "Not eligible."
+                        )}
+                    </p>
+
+                `;
+
+
+                // Make sure Continue is hidden
+                continueButton.classList.add("hidden");
+
+
+                // Remove old eligibility data
+                sessionStorage.removeItem(
+                    "eligibilityData"
+                );
+            }
+
+        }
+
+
+        // ========================================================
+        // ERROR HANDLING
+        // ========================================================
+
+        catch (error) {
+
+            console.error(
+                "Eligibility check error:",
+                error
+            );
+
+
+            result.classList.remove("hidden");
+
+            resultIcon.textContent = "⚠️";
+
+            resultTitle.textContent =
+                "Server Error";
+
+            resultMessage.textContent =
+                error.message ||
+                "Unable to connect to the Java server.";
+
+
+            resultDetails.innerHTML = `
+
+                <p>
+                    <strong>Status:</strong>
+                    The eligibility check could not be completed.
+                </p>
+
+                <p>
+                    Please make sure the Java server is running on
+                    port 9091.
+                </p>
+
+            `;
+
+
+            continueButton.classList.add("hidden");
+        }
+
+
+        // --------------------------------------------------------
+        // Enable button again
+        // --------------------------------------------------------
+
+        checkButton.disabled = false;
+
+        checkButton.textContent =
+            "Check Eligibility";
+
+    });
+}
+
+
+// ============================================================
+// CONTINUE TO ADDITIONAL DETAILS
+// ============================================================
+
+if (continueButton) {
+
+    continueButton.addEventListener("click", function () {
+
+        window.location.href =
+            "additional.html";
+
+    });
+}
+
+
+// ============================================================
 // PAGE 2 - ADDITIONAL DETAILS
-// ======================================================
+// ============================================================
 
 const additionalForm =
     document.getElementById("additionalForm");
@@ -415,20 +551,21 @@ const additionalForm =
 
 if (additionalForm) {
 
+
+    // ----------------------------------------------------------
+    // Get saved eligibility data
+    // ----------------------------------------------------------
+
     const savedData =
         sessionStorage.getItem(
             "eligibilityData"
         );
 
 
-    // --------------------------------------------------
-    // CHECK WHETHER PAGE 1 WAS COMPLETED
-    // --------------------------------------------------
-
     if (!savedData) {
 
         alert(
-            "Please complete the eligibility check first."
+            "Eligibility information was not found. Please complete the eligibility check first."
         );
 
         window.location.href =
@@ -436,85 +573,141 @@ if (additionalForm) {
 
     } else {
 
-        const data =
-            JSON.parse(savedData);
+        let data;
+
+        try {
+
+            data =
+                JSON.parse(savedData);
+} catch (error) {
+
+    console.error(
+        "Invalid eligibility data:",
+        error
+    );
+
+    sessionStorage.removeItem(
+        "eligibilityData"
+    );
+
+    window.location.href =
+        "index.html";
+}
+
+        // ------------------------------------------------------
+        // Populate page 2 fields
+        // ------------------------------------------------------
+
+        const fullName =
+            document.getElementById("fullName");
+
+        const dateOfBirth =
+            document.getElementById("dateOfBirth");
+
+        const age =
+            document.getElementById("age");
+
+        const additionalCitizenship =
+            document.getElementById(
+                "additionalCitizenship"
+            );
+
+        const alreadyVoter =
+            document.getElementById(
+                "alreadyVoter"
+            );
 
 
-        // --------------------------------------------------
-        // DISPLAY PAGE 1 DATA
-        // --------------------------------------------------
+        if (fullName) {
 
-        document.getElementById(
-            "fullName"
-        ).value =
-            data.name || "";
+            fullName.value =
+                data.name || "";
+
+        }
 
 
-        document.getElementById(
-            "dateOfBirth"
-        ).value =
-            data.dob || "";
+        if (dateOfBirth) {
+
+            dateOfBirth.value =
+                data.dob || "";
+
+        }
 
 
-        document.getElementById(
-            "age"
-        ).value =
-            data.age || "";
+        if (age) {
+
+            age.value =
+                data.age ?? "";
+
+        }
 
 
-        document.getElementById(
-            "additionalCitizenship"
-        ).value =
-            data.citizenship || "";
+        if (additionalCitizenship) {
+
+            additionalCitizenship.value =
+                data.citizenship || "";
+
+        }
 
 
-        document.getElementById(
-            "alreadyVoter"
-        ).value =
-            data.registered || "No";
+        if (alreadyVoter) {
+
+            alreadyVoter.value =
+                data.registered || "";
+
+        }
 
 
-        // --------------------------------------------------
-        // VOTER ID FIELD
-        // --------------------------------------------------
+        // ------------------------------------------------------
+        // Voter ID section
+        // ------------------------------------------------------
 
         const voterIdGroup =
             document.getElementById(
                 "voterIdGroup"
             );
 
-
-        const voterId =
+        const voterIdInput =
             document.getElementById(
                 "voterId"
             );
 
 
-        if (
-            data.registered &&
-            data.registered.toLowerCase() ===
-            "yes"
-        ) {
+        if (data.registered === "Yes") {
 
-            voterIdGroup.classList.remove(
-                "hidden"
-            );
+            if (voterIdGroup) {
 
-            voterId.required = true;
+                voterIdGroup.classList.remove(
+                    "hidden"
+                );
+            }
+
+            if (voterIdInput) {
+
+                voterIdInput.required = true;
+            }
 
         } else {
 
-            voterIdGroup.classList.add(
-                "hidden"
-            );
+            if (voterIdGroup) {
 
-            voterId.required = false;
+                voterIdGroup.classList.add(
+                    "hidden"
+                );
+            }
+
+            if (voterIdInput) {
+
+                voterIdInput.required = false;
+
+                voterIdInput.value = "";
+            }
         }
 
 
-        // --------------------------------------------------
-        // SAVE ADDITIONAL DETAILS
-        // --------------------------------------------------
+        // ======================================================
+        // PAGE 2 SUBMIT
+        // ======================================================
 
         additionalForm.addEventListener(
             "submit",
@@ -523,185 +716,183 @@ if (additionalForm) {
                 event.preventDefault();
 
 
-                const saveButton =
+                // ------------------------------------------------
+                // Get form values
+                // ------------------------------------------------
+
+                const phone =
                     document.getElementById(
-                        "saveButton"
+                        "phone"
+                    ).value.trim();
+
+
+                const genderElement =
+                    document.querySelector(
+                        'input[name="gender"]:checked'
                     );
 
 
-                const saveResult =
+                const gender =
+                    genderElement
+                        ? genderElement.value
+                        : "";
+
+
+                const state =
                     document.getElementById(
-                        "saveResult"
+                        "state"
+                    ).value.trim();
+
+
+                const district =
+                    document.getElementById(
+                        "district"
+                    ).value.trim();
+
+
+                const city =
+                    document.getElementById(
+                        "city"
+                    ).value.trim();
+
+
+                const address =
+                    document.getElementById(
+                        "address"
+                    ).value.trim();
+
+
+                const pincode =
+                    document.getElementById(
+                        "pincode"
+                    ).value.trim();
+
+
+                const aadhaar =
+                    document.getElementById(
+                        "aadhaar"
+                    ).value.trim();
+
+
+                const voterId =
+                    voterIdInput
+                        ? voterIdInput.value.trim()
+                        : "";
+
+
+                // ------------------------------------------------
+                // Validation
+                // ------------------------------------------------
+
+                if (!gender) {
+
+                    alert(
+                        "Please select your gender."
+                    );
+
+                    return;
+                }
+
+
+                // Indian mobile number
+                const phonePattern =
+                    /^[6-9][0-9]{9}$/;
+
+
+                if (!phonePattern.test(phone)) {
+
+                    alert(
+                        "Please enter a valid 10-digit Indian mobile number."
+                    );
+
+                    document.getElementById(
+                        "phone"
+                    ).focus();
+
+                    return;
+                }
+
+
+                // Pincode
+                const pincodePattern =
+                    /^[0-9]{6}$/;
+
+
+                if (!pincodePattern.test(pincode)) {
+
+                    alert(
+                        "Please enter a valid 6-digit pincode."
+                    );
+
+                    document.getElementById(
+                        "pincode"
+                    ).focus();
+
+                    return;
+                }
+
+
+                // Aadhaar
+                const aadhaarPattern =
+                    /^[0-9]{12}$/;
+
+
+                if (!aadhaarPattern.test(aadhaar)) {
+
+                    alert(
+                        "Please enter a valid 12-digit Aadhaar number."
+                    );
+
+                    document.getElementById(
+                        "aadhaar"
+                    ).focus();
+
+                    return;
+                }
+
+
+                // Voter ID
+                if (data.registered === "Yes") {
+
+                    if (!voterId) {
+
+                        alert(
+                            "Please enter your Voter ID."
+                        );
+
+                        if (voterIdInput) {
+                            voterIdInput.focus();
+                        }
+
+                        return;
+                    }
+                }
+
+
+                //------------------------------------------------
+                // Disable submit button
+                // ------------------------------------------------
+
+                const submitButton =
+                    additionalForm.querySelector(
+                        'button[type="submit"]'
                     );
 
 
-                const saveIcon =
-                    document.getElementById(
-                        "saveIcon"
-                    );
+                if (submitButton) {
 
+                    submitButton.disabled = true;
 
-                const saveTitle =
-                    document.getElementById(
-                        "saveTitle"
-                    );
-
-
-                const saveMessage =
-                    document.getElementById(
-                        "saveMessage"
-                    );
-
-
-                const savedDetails =
-                    document.getElementById(
-                        "savedDetails"
-                    );
+                    submitButton.textContent =
+                        "Saving...";
+                }
 
 
                 try {
 
-                    saveButton.disabled =
-                        true;
-
-                    saveButton.textContent =
-                        "Saving...";
-
-
-                    const phone =
-                        document.getElementById(
-                            "phone"
-                        ).value.trim();
-
-
-                    const gender =
-                        document.getElementById(
-                            "gender"
-                        ).value;
-
-
-                    const state =
-                        document.getElementById(
-                            "state"
-                        ).value.trim();
-
-
-                    const district =
-                        document.getElementById(
-                            "district"
-                        ).value.trim();
-
-
-                    const city =
-                        document.getElementById(
-                            "city"
-                        ).value.trim();
-
-
-                    const address =
-                        document.getElementById(
-                            "address"
-                        ).value.trim();
-
-
-                    const pincode =
-                        document.getElementById(
-                            "pincode"
-                        ).value.trim();
-
-
-                    const aadhaar =
-                        document.getElementById(
-                            "aadhaar"
-                        ).value.trim();
-
-
-                    const voterIdValue =
-                        voterId.value.trim();
-
-
-                    // --------------------------------------------------
-                    // VALIDATION
-                    // --------------------------------------------------
-
-                    if (!gender) {
-
-                        throw new Error(
-                            "Please select your gender."
-                        );
-                    }
-
-
-                    if (!/^[6-9][0-9]{9}$/.test(phone)) {
-
-                        throw new Error(
-                            "Please enter a valid 10-digit Indian mobile number."
-                        );
-                    }
-
-
-                    if (!state) {
-
-                        throw new Error(
-                            "Please enter your state."
-                        );
-                    }
-
-
-                    if (!district) {
-
-                        throw new Error(
-                            "Please enter your district."
-                        );
-                    }
-
-
-                    if (!city) {
-
-                        throw new Error(
-                            "Please enter your city."
-                        );
-                    }
-
-
-                    if (!address) {
-
-                        throw new Error(
-                            "Please enter your address."
-                        );
-                    }
-
-
-                    if (!/^[0-9]{6}$/.test(pincode)) {
-
-                        throw new Error(
-                            "Pincode must contain exactly 6 digits."
-                        );
-                    }
-
-
-                    if (!/^[0-9]{12}$/.test(aadhaar)) {
-
-                        throw new Error(
-                            "Aadhaar number must contain exactly 12 digits."
-                        );
-                    }
-
-
-                    if (
-                        data.registered === "Yes" &&
-                        !voterIdValue
-                    ) {
-
-                        throw new Error(
-                            "Please enter your Voter ID number."
-                        );
-                    }
-
-
-                    // --------------------------------------------------
-                    // SEND TO JAVA SERVER
-                    // --------------------------------------------------
+                    // --------------------------------------------
+                    // Create request
+                    // --------------------------------------------
 
                     const formData =
                         new URLSearchParams();
@@ -712,90 +903,80 @@ if (additionalForm) {
                         data.checkId
                     );
 
-
                     formData.append(
                         "name",
                         data.name
                     );
-
 
                     formData.append(
                         "dob",
                         data.dob
                     );
 
-
                     formData.append(
                         "age",
                         data.age
                     );
-
 
                     formData.append(
                         "gender",
                         gender
                     );
 
-
                     formData.append(
                         "phone",
                         phone
                     );
-
 
                     formData.append(
                         "citizenship",
                         data.citizenship
                     );
 
-
                     formData.append(
                         "state",
                         state
                     );
-
 
                     formData.append(
                         "district",
                         district
                     );
 
-
                     formData.append(
                         "city",
                         city
                     );
-
 
                     formData.append(
                         "address",
                         address
                     );
 
-
                     formData.append(
                         "pincode",
                         pincode
                     );
-
 
                     formData.append(
                         "aadhaar",
                         aadhaar
                     );
 
-
                     formData.append(
                         "registered",
                         data.registered
                     );
 
-
                     formData.append(
                         "voterId",
-                        voterIdValue
+                        voterId
                     );
 
+
+                    // --------------------------------------------
+                    // Send to Java backend
+                    // --------------------------------------------
 
                     const response =
                         await fetch(
@@ -815,116 +996,104 @@ if (additionalForm) {
                         );
 
 
-                    const responseData =
+                    const resultData =
                         await response.json();
 
 
-                    saveResult.classList.remove(
-                        "hidden"
+                    console.log(
+                        "Save response:",
+                        resultData
                     );
 
 
-                    if (responseData.success) {
+                    // --------------------------------------------
+                    // Check server error
+                    // --------------------------------------------
 
-                        saveResult.className =
-                            "result success";
-
-
-                        saveIcon.textContent =
-                            "✅";
-
-
-                        saveTitle.textContent =
-                            "Details Saved Successfully";
-
-
-                        saveMessage.textContent =
-                            "Your additional voter details have been stored successfully.";
-
-
-                        savedDetails.innerHTML =
-
-                            "<strong>Name:</strong> "
-                            + escapeHtml(data.name)
-                            + "<br>"
-
-                            + "<strong>Age:</strong> "
-                            + data.age
-                            + "<br>"
-
-                            + "<strong>Gender:</strong> "
-                            + escapeHtml(gender)
-                            + "<br>"
-
-                            + "<strong>Phone:</strong> "
-                            + escapeHtml(phone)
-                            + "<br>"
-
-                            + "<strong>State:</strong> "
-                            + escapeHtml(state)
-                            + "<br>"
-
-                            + "<strong>District:</strong> "
-                            + escapeHtml(district)
-                            + "<br>"
-
-                            + "<strong>City:</strong> "
-                            + escapeHtml(city);
-
-
-                        saveButton.textContent =
-                            "Details Saved";
-
-
-                        saveButton.disabled =
-                            true;
-
-
-                        // Remove temporary browser data
-
-                        sessionStorage.removeItem(
-                            "eligibilityData"
-                        );
-
-
-                    } else {
+                    if (
+                        !response.ok ||
+                        resultData.success === false
+                    ) {
 
                         throw new Error(
-                            responseData.message ||
-                            "Unable to save details."
+                            resultData.message ||
+                            "Unable to save voter details."
                         );
                     }
 
 
-                } catch (error) {
+                    // --------------------------------------------
+                    // Success
+                    // --------------------------------------------
 
-                    saveResult.className =
-                        "result failure";
-
-
-                    saveResult.classList.remove(
-                        "hidden"
+                    alert(
+                        resultData.message ||
+                        "Your details have been saved successfully."
                     );
 
 
-                    saveIcon.textContent =
-                        "❌";
+                    // Remove temporary session data
+                    sessionStorage.removeItem(
+                        "eligibilityData"
+                    );
 
 
-                    saveTitle.textContent =
-                        "Unable to Save";
+                    // Optional success message
+                    const saveResult =
+                        document.getElementById(
+                            "saveResult"
+                        );
 
 
-                    saveMessage.textContent =
-                        error.message;
+                    if (saveResult) {
+
+                        saveResult.classList.remove(
+                            "hidden"
+                        );
+
+                        saveResult.innerHTML = `
+
+                            <h2>✅ Details Saved Successfully</h2>
+
+                            <p>
+                                Your voter eligibility details
+                                have been saved successfully.
+                            </p>
+
+                        `;
+                    }
+
+                }
 
 
-                    saveButton.disabled =
-                        false;
+                // ------------------------------------------------
+                // PAGE 2 ERROR
+                // ------------------------------------------------
+
+                catch (error) {
+
+                    console.error(
+                        "Save error:",
+                        error
+                    );
 
 
-                    saveButton.textContent =
-                        "Save Details";
+                    alert(
+                        error.message ||
+                        "Unable to save your details."
+                    );
+                }
+
+
+                finally {
+
+                    if (submitButton) {
+
+                        submitButton.disabled = false;
+
+                        submitButton.textContent =
+                            "Submit";
+                    }
                 }
 
             }
@@ -933,14 +1102,13 @@ if (additionalForm) {
 }
 
 
-// ======================================================
-// HTML ESCAPE FUNCTION
-// ======================================================
+// ============================================================
+// ESCAPE HTML
+// ============================================================
 
 function escapeHtml(value) {
 
-    if (value === null ||
-        value === undefined) {
+    if (value === null || value === undefined) {
 
         return "";
     }
